@@ -1,91 +1,37 @@
 pipeline {
-
-    agent {
-        node {
-            label 'master'
-        }
-    }
-
-    tools { 
-        maven 'maven3' 
-    }
-
-    options {
-        buildDiscarder logRotator( 
-                    daysToKeepStr: '15', 
-                    numToKeepStr: '10'
-            )
-    }
-
-    environment {
-        APP_NAME = "STUDENT_APP"
-        APP_ENV  = "DEV"
-    }
+    agent any
 
     stages {
-        
-        stage('Stage 1_22050005') {
+        stage('Environment Preparation') {
             steps {
-                cleanWs()
-                sh """
-                echo "S1_22050005: Environment Preparation Completed"
-                """
+                echo 'S1_22050005: Environment Preparation Completed'
             }
         }
-
-        stage('Stage 2_22050005') {
+        stage('Web Server Creation') {
             steps {
-                agent {
-                    docker {
-                        reuseNode: true
-                        image: 'ubuntu:18.04'
+                sh 'docker stop S2_22050005_Server || true'  // stop and remove any existing container with the same name
+                sh 'docker rm S2_22050005_Server || true'
+                sh 'docker run -d -p 42000:80 --name S2_22050005_Server 22050005_webimage'
+                echo 'S2_22050005: Web Server Creation Completed'
+            }
+        }
+        stage('API Test') {
+            steps {
+                echo 'S3_22050005: API Test Completed'
+            }
+        }
+        stage('Release Work') {
+            steps {
+                script {
+                    def userInput = input message: 'Do you want to release the work?', parameters: [choice(choices: ['Proceed', 'Abort'], description: '', name: 'Release')]
+                    if (userInput == 'Proceed') {
+                        echo 'Work Released - 22050005'
+                    } else {
+                        currentBuild.result = 'ABORTED'
+                        error('Pipeline aborted by user')
                     }
                 }
             }
         }
-
-        stage('Stage 3&4_22050005') {
-            parallel {
-
-                stage('Stage 3_22050005') {
-                    steps {
-                        cleanWs()
-                        sh """
-                        echo "S3_22050005: API Test Completed"
-                        """
-                    }
-                }
-
-                stage('Stage 4_22050005') {
-                    steps {
-                        cleanWs()
-                        sh """
-                        echo "S4_22050005: DAST Security Test Completed"
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Stage 5_22050005') {
-            steps {
-                input('Do you want to release the work?')
-            }
-        }
-
-        stage('Stage 6_22050005') {
-            when {
-                not {
-
-                }
-            }
-            steps {
-                cleanWs()
-                        sh """
-                        echo "Work Released - <your student id>"
-                        """
-            }
-        }
-
-    }   
+    }
 }
