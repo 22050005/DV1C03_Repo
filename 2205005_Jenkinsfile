@@ -1,0 +1,91 @@
+pipeline {
+
+    agent {
+        node {
+            label 'master'
+        }
+    }
+
+    tools { 
+        maven 'maven3' 
+    }
+
+    options {
+        buildDiscarder logRotator( 
+                    daysToKeepStr: '15', 
+                    numToKeepStr: '10'
+            )
+    }
+
+    environment {
+        APP_NAME = "STUDENT_APP"
+        APP_ENV  = "DEV"
+    }
+
+    stages {
+        
+        stage('Stage 1_22050005') {
+            steps {
+                cleanWs()
+                sh """
+                echo "S1_22050005: Environment Preparation Completed"
+                """
+            }
+        }
+
+        stage('Stage 2_22050005') {
+            steps {
+                agent {
+                    docker {
+                        reuseNode: true
+                        image: 'ubuntu:18.04'
+                    }
+                }
+            }
+        }
+
+        stage('Stage 3&4_22050005') {
+            parallel {
+
+                stage('Stage 3_22050005') {
+                    steps {
+                        cleanWs()
+                        sh """
+                        echo "S3_22050005: API Test Completed"
+                        """
+                    }
+                }
+
+                stage('Stage 4_22050005') {
+                    steps {
+                        cleanWs()
+                        sh """
+                        echo "S4_22050005: DAST Security Test Completed"
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Stage 5_22050005') {
+            steps {
+                input('Do you want to release the work?')
+            }
+        }
+
+        stage('Stage 6_22050005') {
+            when {
+                not {
+
+                }
+            }
+            steps {
+                cleanWs()
+                        sh """
+                        echo "Work Released - <your student id>"
+                        """
+            }
+        }
+
+    }   
+}
