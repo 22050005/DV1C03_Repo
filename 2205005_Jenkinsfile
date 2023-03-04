@@ -1,34 +1,18 @@
 pipeline {
-         agent any
-         stages {
-                 stage('One') {
-                 steps {
-                     echo 'Hi, this is Zulaikha from edureka'
-                 }
-                 }
+    agent any
 
-                stage('Integration test') {
-                    agent {
-                        docker {
-                            reuseNode true
-                            image 'ubuntu'
-                        }
-                    }
-                }
-                 stage('Two') {
-                 steps {
-                    input('Do you want to proceed?')
-                 }
-                 }
-                 stage('Three') {
-                 when {
-                       not {
-                            branch "master"
-                       }
-                 }
-                 steps {
-                       echo "Hello"
-                 }
-                 }
-              }
+    stages {
+        stage('Environment Preparation') {
+            steps {
+                echo 'S1_22050005: Environment Preparation Completed'
+            }
+        }
+
+        stage('Web Server Creation') {
+            steps {
+                sh 'docker run -d --name S2_22050005 22050005_webimage'
+                echo 'S2_22050005: Web Server Creation Completed'
+            }
+        }
+    }
 }
