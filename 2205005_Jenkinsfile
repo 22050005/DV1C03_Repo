@@ -10,12 +10,28 @@ pipeline {
 
         stage('Stage 2') {
             steps {
-                sh 'sudo docker rm -f S2_22050005_Server || true'
-                sh 'sudo docker run -d --name S2_22050005_Server 22050005_webimage'
+                sh 'docker rm -f S2_22050005_Server || true'
+                sh 'docker run -d --name S2_22050005_Server 22050005_webimage'
                 echo 'S2_22050005: Web Server Creation Completed'
             }
         }
+
+        stage('Stage 3 & 4') {
+            parallel {
+
+                stage('Stage 3') {
+                    steps {
+                        echo "S3_22050005: API Test Completed"
+                    }
+                }
+
+                stage('Stage 4') {
+                    steps {
+                        echo "S4_22050005: DAST Security Test Completed"
+                    }
+                }
+            }
+        }
+
     }
 }
-
-docker: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock:
