@@ -18,7 +18,6 @@ pipeline {
 
         stage('Stage 3 & 4') {
             parallel {
-
                 stage('Stage 3_22050005') {
                     steps {
                         echo "S3_22050005: API Test Completed"
@@ -33,22 +32,36 @@ pipeline {
             }
         }
 
+
         stage('Stage 5_22050005') {
             steps {
-                input('Do you want to release the work?')
+                script {
+                    def userInput = input(
+                        id: 'releaseConfirmation', 
+                        message: 'Do you want to release the work?', 
+                        parameters: [
+                            [
+                                $class: 'BooleanParameterDefinition', 
+                                defaultValue: false, 
+                                description: 'Release the work?', 
+                                name: 'release'
+                            ]
+                        ]
+                    )
+                }
             }
         }
 
         stage('Stage 6_22050005') {
-            when {
-                not {
-                    echo "Abort"
-                }
-            }
             steps {
-                echo "Work Released - 22050005"
+                if (userInput.release) {
+                                echo 'Work Released'
+                            } 
+                            else 
+                            {
+                                error 'Abort'
+                            }
             }
         }
-
     }
 }
