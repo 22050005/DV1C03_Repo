@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage('Stage 1') {
+        stage('Stage 1_22050005') {
             steps {
                 echo 'S1_22050005: Environment Preparation Completed'
             }
         }
 
-        stage('Stage 2') {
+        stage('Stage 2_22050005') {
             steps {
                 sh 'docker rm -f S2_22050005_Server || true'
                 sh 'docker run -d --name S2_22050005_Server 22050005_webimage'
@@ -19,17 +19,34 @@ pipeline {
         stage('Stage 3 & 4') {
             parallel {
 
-                stage('Stage 3') {
+                stage('Stage 3_22050005') {
                     steps {
                         echo "S3_22050005: API Test Completed"
                     }
                 }
 
-                stage('Stage 4') {
+                stage('Stage 4_22050005') {
                     steps {
                         echo "S4_22050005: DAST Security Test Completed"
                     }
                 }
+            }
+        }
+
+        stage('Stage 5_22050005') {
+            steps {
+                input('Do you want to release the work?')
+            }
+        }
+
+        stage('Stage 6_22050005') {
+            when {
+                not {
+                    echo "Abort"
+                }
+            }
+            steps {
+                echo "Work Released - 22050005"
             }
         }
 
