@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage('Stage 1_22050005') {
+        stage('Stage 1_') {
             steps {
                 echo 'S1_22050005: Environment Preparation Completed'
             }
         }
 
-        stage('Stage 2_22050005') {
+        stage('Stage 2_') {
             steps {
                 sh 'docker rm -f S2_22050005_Server || true'
                 sh 'docker run -d --name S2_22050005_Server 22050005_webimage'
@@ -18,13 +18,12 @@ pipeline {
 
         stage('Stage 3 & 4') {
             parallel {
-                stage('Stage 3_22050005') {
+                stage('Stage 3') {
                     steps {
                         echo "S3_22050005: API Test Completed"
                     }
                 }
-
-                stage('Stage 4_22050005') {
+                stage('Stage 4') {
                     steps {
                         echo "S4_22050005: DAST Security Test Completed"
                     }
@@ -32,35 +31,15 @@ pipeline {
             }
         }
 
-
-        stage('Stage 5_22050005') {
+        stage('Stage 5') {
             steps {
-                script {
-                    def userInput = input(
-                        id: 'releaseConfirmation', 
-                        message: 'Do you want to release the work?', 
-                        parameters: [
-                            [
-                                $class: 'BooleanParameterDefinition', 
-                                defaultValue: false, 
-                                description: 'Release the work?', 
-                                name: 'release'
-                            ]
-                        ]
-                    )
-                }
+                input('Do you want to release the work?')
             }
         }
 
-        stage('Stage 6_22050005') {
+        stage('Stage 6') {
             steps {
-                if (userInput.release) {
-                                echo 'Work Released'
-                            } 
-                            else 
-                            {
-                                error 'Abort'
-                            }
+                echo 'Work Released'
             }
         }
     }
